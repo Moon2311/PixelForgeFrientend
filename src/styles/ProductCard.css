@@ -1,0 +1,114 @@
+.product-card {
+  width: 340px;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,.08);
+  transition: .3s;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-image {
+  position: relative;
+}
+
+.product-image img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+}
+
+.discount-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: crimson;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.product-content {
+  padding: 18px;
+}
+
+.category {
+  color: gray;
+  font-size: 14px;
+}
+
+.product-content h2 {
+  margin: 10px 0;
+  font-size: 22px;
+}
+
+.description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
+
+.rating {
+  margin-bottom: 15px;
+}
+
+.rating span {
+  color: gray;
+  font-size: 13px;
+}
+
+.price-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.discount-price {
+  color: #0a8f08;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.original-price {
+  color: gray;
+  text-decoration: line-through;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.stock {
+  margin-bottom: 18px;
+}
+
+.in-stock {
+  color: green;
+}
+
+.out-stock {
+  color: red;
+}
+
+.buy-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: #0d6efd;
+  color: white;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.buy-btn:hover {
+  background: #0b5ed7;
+}
