@@ -1,5 +1,6 @@
 const DEFAULT_API_BASE_URL = 'http://localhost:8001'
 const DEFAULT_PRODUCTS_API_BASE_URL = 'http://localhost:8002'
+const DEFAULT_CART_API_BASE_URL = 'http://localhost:8003'
 
 export function getApiBaseUrl() {
   const stored = localStorage.getItem('api_base_url')
@@ -13,6 +14,13 @@ export function getProductsApiBaseUrl() {
   const valid =
     stored && /^https?:\/\/.+/i.test(stored) ? stored.replace(/\/+$/, '') : ''
   return valid || DEFAULT_PRODUCTS_API_BASE_URL
+}
+
+export function getCartApiBaseUrl() {
+  const stored = localStorage.getItem('cart_api_base_url')
+  const valid =
+    stored && /^https?:\/\/.+/i.test(stored) ? stored.replace(/\/+$/, '') : ''
+  return valid || DEFAULT_CART_API_BASE_URL
 }
 
 export function getAccessToken() {

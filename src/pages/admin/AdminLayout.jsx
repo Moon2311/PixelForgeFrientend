@@ -7,6 +7,7 @@ import {
   GridIcon,
   LogsIcon,
   Logo,
+  PackageIcon,
 } from '../../components/Icons.jsx'
 import ThemeToggle from '../../components/ThemeToggle.jsx'
 import { getUser, signOut } from '../../lib/api.js'
@@ -38,6 +39,13 @@ export default function AdminLayout() {
           >
             <BoxIcon />
             <span>Products</span>
+          </NavLink>
+          <NavLink
+            to="/admin/inventory"
+            className={({ isActive }) => `admin-nav-item${isActive ? ' active' : ''}`}
+          >
+            <PackageIcon />
+            <span>Inventory</span>
           </NavLink>
           <NavLink
             to="/admin/inventory/logs"

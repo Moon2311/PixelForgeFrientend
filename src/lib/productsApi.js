@@ -19,7 +19,7 @@ async function request(path, { method = 'GET', headers = {}, body } = {}) {
     })
   } catch {
     throw new ApiError(
-      `Could not reach the products API at ${getProductsApiBaseUrl()}. Check that the product-service is running on port 8002.`,
+      `Could not reach the products API at ${getProductsApiBaseUrl()}. Check that the search-service is running on port 8002.`,
       0,
     )
   }

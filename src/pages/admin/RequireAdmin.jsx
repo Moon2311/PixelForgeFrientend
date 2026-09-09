@@ -15,9 +15,10 @@ function ForbiddenPage() {
   )
 }
 
-export default function RequireAdmin({ children }) {
+export default function RequireAdmin({ children, allowedRoles }) {
   const user = getUser()
   if (!user) return <Navigate to="/login" replace />
-  if (user.role !== 'admin') return <ForbiddenPage />
+  const roles = allowedRoles || ['admin']
+  if (!roles.includes(user.role)) return <ForbiddenPage />
   return children
 }

@@ -6,7 +6,6 @@ import Button from '../components/Button.jsx'
 import { EmailIcon, LockIcon, GoogleIcon, GithubIcon } from '../components/Icons.jsx'
 import { useToast } from '../context/useToast.js'
 import { getApiBaseUrl, setAccessToken } from '../lib/api.js'
-import { validateEmail } from '../lib/validation.js'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -29,7 +28,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     const next = {}
-    if (!email || !validateEmail(email)) next.email = 'Please enter a valid email'
+    if (!email) next.email = 'Email or username is required'
     if (!password) next.password = 'Password is required'
     setErrors(next)
     if (Object.keys(next).length > 0) return
@@ -75,8 +74,8 @@ export default function Login() {
         <InputField
           id="email"
           name="email"
-          type="email"
-          label="Email address"
+          type="text"
+          label="Email or username"
           value={email}
           onChange={(e) => {
             setEmail(e.target.value)
@@ -85,7 +84,7 @@ export default function Login() {
           icon={<EmailIcon />}
           error={errors.email}
           required
-          autoComplete="email"
+          autoComplete="username"
         />
         <InputField
           id="password"

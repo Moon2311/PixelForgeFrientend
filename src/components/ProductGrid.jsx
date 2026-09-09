@@ -38,7 +38,7 @@ export default function ProductGrid() {
       .catch(() => {
         if (controller.signal.aborted) return
         setError(
-          `Could not reach the products API at ${baseUrl}. Check that the product-service is running on port 8002.`,
+          `Could not reach the products API at ${baseUrl}. Check that the search-service is running on port 8002.`,
         )
       })
       .finally(() => {

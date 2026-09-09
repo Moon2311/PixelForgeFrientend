@@ -8,10 +8,12 @@ import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
 import Home from './pages/Home.jsx'
 import Products from './pages/Products.jsx'
+import Cart from './pages/Cart.jsx'
 import AdminLayout from './pages/admin/AdminLayout.jsx'
 import AdminProductDetail from './pages/admin/AdminProductDetail.jsx'
 import AdminProductForm from './pages/admin/AdminProductForm.jsx'
 import AdminProducts from './pages/admin/AdminProducts.jsx'
+import AdminInventory from './pages/admin/AdminInventory.jsx'
 import AdminInventoryLogs from './pages/admin/AdminInventoryLogs.jsx'
 import AdminLowStock from './pages/admin/AdminLowStock.jsx'
 import RequireAdmin from './pages/admin/RequireAdmin.jsx'
@@ -34,6 +36,7 @@ export default function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/home" element={<Home />} />
             <Route path="/products" element={<Products />} />
+            <Route path="/cart" element={<Cart />} />
             <Route
               path="/admin"
               element={
@@ -47,6 +50,7 @@ export default function App() {
               <Route path="products/new" element={<AdminProductForm />} />
               <Route path="products/:id" element={<AdminProductDetail />} />
               <Route path="products/:id/edit" element={<AdminProductForm />} />
+              <Route path="inventory" element={<AdminInventory />} />
               <Route path="inventory/logs" element={<AdminInventoryLogs />} />
               <Route path="inventory/low-stock" element={<AdminLowStock />} />
             </Route>

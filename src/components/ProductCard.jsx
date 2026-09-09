@@ -1,7 +1,14 @@
 import { useState } from "react";
+import { getAccessToken } from "../lib/api.js";
+import { addToCart } from "../lib/cartApi.js";
+import { useToast } from "../context/useToast.js";
 import "./ProductCard.css";
 
 const ProductCard = ({ product }) => {
+  const showToast = useToast();
+  const [adding, setAdding] = useState(false);
+  const [added, setAdded] = useState(false);
+
   const images =
     product.images && product.images.length > 0
       ? product.images
@@ -10,8 +17,29 @@ const ProductCard = ({ product }) => {
         : [];
 
   const [index, setIndex] = useState(0);
-
   const goTo = (i) => setIndex((i + images.length) % images.length);
+
+  const handleAddToCart = async () => {
+    if (!getAccessToken()) {
+      showToast("Please log in to add items to your cart", "error");
+      return;
+    }
+    if (adding || added) return;
+
+    setAdding(true);
+    try {
+      await addToCart(product.id, 1);
+      setAdded(true);
+      showToast("Product added to cart successfully.", "success");
+      // Dispatch custom event so Navbar can refresh cart count
+      window.dispatchEvent(new Event("cart-updated"));
+      setTimeout(() => setAdded(false), 2000);
+    } catch (err) {
+      showToast(err.message || "Failed to add to cart", "error");
+    } finally {
+      setAdding(false);
+    }
+  };
 
   return (
     <div className="product-card">
@@ -117,8 +145,12 @@ const ProductCard = ({ product }) => {
           )}
         </div>
 
-        <button className="buy-btn">
-          Add to Cart
+        <button
+          className={`buy-btn${added ? " buy-btn-added" : ""}`}
+          disabled={adding || added || product.stock_quantity <= 0}
+          onClick={handleAddToCart}
+        >
+          {adding ? "Adding..." : added ? "✓ Added to Cart" : "Add to Cart"}
         </button>
       </div>
     </div>

@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --color-pf-navy: #131921;
+  --color-pf-navy-light: #232F3E;
+  --color-pf-navy-dark: #0F1111;
+  --color-pf-orange: #FF9900;
+  --color-pf-orange-hover: #FA8900;
+  --color-pf-yellow: #FEBD69;
+  --color-pf-bg: #EAEDED;
+  --color-pf-card: #FFFFFF;
+  --color-pf-link: #007185;
+  --color-pf-link-hover: #C7511F;
+  --color-pf-text: #0F1111;
+  --color-pf-text-light: #565959;
+  --color-pf-deal-red: #CC0C39;
+  --color-pf-badge-green: #067D62;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+
+  --animate-slide-in: slide-in 0.25s ease-out;
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

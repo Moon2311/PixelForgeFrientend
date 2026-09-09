@@ -22,11 +22,11 @@ React + Vite frontend for PixelForge — sign-in, sign-up, password recovery, th
          ┌──────────────────▼──────────────────┐
          │         nginx gateway :80            │
          │  /api/auth/*  → auth-service :8001  │
-         │  /api/products/* → product-service  │
+          │  /api/products/* → search-service  │
          └──────┬──────────────────────┬───────┘
                 │                      │
    ┌────────────▼────────┐  ┌──────────▼──────────────┐
-   │  auth-service        │  │  product-service         │
+   │  auth-service        │  │  search-service         │
    │  Django DRF + PG     │  │  Django DRF + SQLite/ES  │
    │  :8001 (Docker)      │  │  :8002 (Docker)          │
    └──────────────────────┘  └──────────────────────────┘

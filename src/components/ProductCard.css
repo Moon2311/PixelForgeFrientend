@@ -216,3 +216,12 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 20px var(--primary-glow, rgba(79, 70, 229, 0.25));
 }
+
+.buy-btn-added {
+  background: linear-gradient(135deg, var(--success, #10b981), #059669);
+}
+
+.buy-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
