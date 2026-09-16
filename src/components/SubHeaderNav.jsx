@@ -19,7 +19,7 @@ export default function SubHeaderNav() {
   return (
     <>
       <nav className="bg-pf-navy-light text-white text-sm">
-        <div className="flex items-center gap-4 px-4 max-w-[1500px] mx-auto overflow-x-auto scrollbar-hide">
+        <div className="flex items-center gap-4 px-4 overflow-x-auto scrollbar-hide">
           {/* All / Hamburger Menu */}
           <button
             type="button"
@@ -94,7 +94,7 @@ export default function SubHeaderNav() {
               <div className="px-5 py-3 mt-2 text-xs font-bold text-pf-text-light uppercase tracking-wider border-b border-gray-100">
                 Quick Links
               </div>
-              {["Today's Deals", 'Customer Service', 'Gift Cards', 'Sell on PixelForge'].map((item) => (
+              {["Today's Deals", 'Customer Service', 'Gift Cards', 'Sell on OKasha Electronics'].map((item) => (
                 <Link
                   key={item}
                   to="/products"

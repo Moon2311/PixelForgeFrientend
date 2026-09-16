@@ -199,6 +199,11 @@ export default function Register() {
       <div className="auth-footer">
         Already have an account? <Link to="/login">Sign in</Link>
       </div>
+      <div className="auth-footer" style={{ marginTop: '-0.25rem' }}>
+        <Link to={sessionStorage.getItem('last_public_path') || '/'} className="guest-link">
+          Continue as guest
+        </Link>
+      </div>
     </AuthLayout>
   )
 }

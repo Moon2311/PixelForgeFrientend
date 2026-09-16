@@ -180,14 +180,4 @@
   line-height: 1;
 }
 
-@media (max-width: 820px) {
-  .navbar-user {
-    display: none;
-  }
-
-  .navbar-search {
-    order: 3;
-    min-width: 100%;
-    max-width: none;
-  }
-}
+/* Mobile breakpoints intentionally removed — layout is identical at all widths */

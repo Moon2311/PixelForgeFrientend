@@ -1,47 +1,22 @@
-import { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from './Button.jsx'
 import SearchBar from './SearchBar.jsx'
 import ThemeToggle from './ThemeToggle.jsx'
 import { Logo } from './Icons.jsx'
 import { useToast } from '../context/useToast.js'
-import { signOut, getAccessToken } from '../lib/api.js'
-import { getCart } from '../lib/cartApi.js'
+import { useCart } from '../context/CartContext.jsx'
+import { signOut, getUser } from '../lib/api.js'
 
 export default function Navbar() {
   const navigate = useNavigate()
   const showToast = useToast()
-  const stored = localStorage.getItem('user')
-  const user = stored ? JSON.parse(stored) : null
-  const [cartCount, setCartCount] = useState(0)
-
-  const fetchCartCount = useCallback(async () => {
-    if (!getAccessToken()) {
-      setCartCount(0)
-      return
-    }
-    try {
-      const result = await getCart()
-      const items = result?.data?.items || []
-      const total = items.reduce((sum, item) => sum + item.quantity, 0)
-      setCartCount(total)
-    } catch {
-      // silently ignore — cart may not be available
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchCartCount()
-    const handler = () => fetchCartCount()
-    window.addEventListener('cart-updated', handler)
-    return () => window.removeEventListener('cart-updated', handler)
-  }, [fetchCartCount])
+  const user = getUser()
+  const { cartCount } = useCart()
 
   const handleLogout = () => {
     signOut()
-    setCartCount(0)
     showToast('Signed out. See you soon!')
-    setTimeout(() => navigate('/login'), 800)
+    setTimeout(() => navigate('/'), 800)
   }
 
   const name = user?.first_name || user?.username || 'A'
@@ -49,9 +24,9 @@ export default function Navbar() {
 
   return (
     <header className="navbar">
-      <button type="button" className="navbar-brand" onClick={() => navigate('/home')}>
+      <button type="button" className="navbar-brand" onClick={() => navigate('/')}>
         <Logo size={26} />
-        <span>PixelForge</span>
+        <span>OKasha Electronics</span>
       </button>
 
       <SearchBar className="navbar-search" />
@@ -70,17 +45,31 @@ export default function Navbar() {
           </svg>
           {cartCount > 0 && <span className="navbar-cart-badge">{cartCount}</span>}
         </Link>
-        <span className="navbar-user">
-          <span className="navbar-avatar">{firstName.charAt(0)}</span>
-          <span className="navbar-meta">
-            <strong>{name}</strong>
-            <span>{user?.email || ''}</span>
-          </span>
-        </span>
-        <ThemeToggle />
-        <Button type="button" variant="ghost" onClick={handleLogout}>
-          Sign out
-        </Button>
+        {user ? (
+          <>
+            <span className="navbar-user">
+              <span className="navbar-avatar">{firstName.charAt(0)}</span>
+              <span className="navbar-meta">
+                <strong>{name}</strong>
+                <span>{user.email || ''}</span>
+              </span>
+            </span>
+            <ThemeToggle />
+            <Button type="button" variant="ghost" onClick={handleLogout}>
+              Sign out
+            </Button>
+          </>
+        ) : (
+          <>
+            <ThemeToggle />
+            <Button type="button" variant="ghost" onClick={() => navigate('/login')}>
+              Sign In
+            </Button>
+            <Button type="button" variant="primary" size="sm" onClick={() => navigate('/register')}>
+              Register
+            </Button>
+          </>
+        )}
       </div>
     </header>
   )

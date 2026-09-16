@@ -29,7 +29,7 @@ export default function AdminLayout() {
       <aside className="admin-sidebar">
         <Link to="/admin/products" className="admin-brand">
           <Logo size={26} />
-          <span>PixelForge Admin</span>
+          <span>OKasha Electronics Admin</span>
         </Link>
         <nav className="admin-nav">
           <NavLink

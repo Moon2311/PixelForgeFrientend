@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getAccessToken } from "../lib/api.js";
 import { addToCart } from "../lib/cartApi.js";
 import { useToast } from "../context/useToast.js";
+import { useCart } from "../context/CartContext.jsx";
 import "./ProductCard.css";
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
   const showToast = useToast();
+  const { addToGuestCart } = useCart();
   const [adding, setAdding] = useState(false);
   const [added, setAdded] = useState(false);
 
@@ -20,18 +24,23 @@ const ProductCard = ({ product }) => {
   const goTo = (i) => setIndex((i + images.length) % images.length);
 
   const handleAddToCart = async () => {
+    if (adding || added) return;
+
+    // Guest user: save pending action and redirect to login
     if (!getAccessToken()) {
-      showToast("Please log in to add items to your cart", "error");
+      sessionStorage.setItem(
+        "pending_action",
+        JSON.stringify({ type: "add_to_cart", productId: product.id }),
+      );
+      navigate("/login", { state: { returnTo: "/cart" } });
       return;
     }
-    if (adding || added) return;
 
     setAdding(true);
     try {
       await addToCart(product.id, 1);
       setAdded(true);
       showToast("Product added to cart successfully.", "success");
-      // Dispatch custom event so Navbar can refresh cart count
       window.dispatchEvent(new Event("cart-updated"));
       setTimeout(() => setAdded(false), 2000);
     } catch (err) {

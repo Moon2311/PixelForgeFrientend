@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import AuthLayout from '../components/AuthLayout.jsx'
 import InputField from '../components/InputField.jsx'
 import Button from '../components/Button.jsx'
 import { EmailIcon, LockIcon, GoogleIcon, GithubIcon } from '../components/Icons.jsx'
 import { useToast } from '../context/useToast.js'
+import { useCart } from '../context/CartContext.jsx'
 import { getApiBaseUrl, setAccessToken } from '../lib/api.js'
+import { addToCart } from '../lib/cartApi.js'
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
   const showToast = useToast()
+  const { mergeGuestCartToServer } = useCart()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -53,7 +57,28 @@ export default function Login() {
           localStorage.removeItem('remembered_email')
         }
         showToast('Welcome back! Redirecting...')
-        setTimeout(() => navigate(user?.role === 'admin' ? '/admin' : '/home'), 1000)
+
+        // Merge guest cart into server cart
+        await mergeGuestCartToServer()
+
+        // Resolve pending action (e.g., add-to-cart that triggered the login)
+        const pending = sessionStorage.getItem('pending_action')
+        if (pending) {
+          try {
+            const action = JSON.parse(pending)
+            if (action.type === 'add_to_cart' && action.productId) {
+              await addToCart(action.productId, 1)
+              window.dispatchEvent(new Event('cart-updated'))
+            }
+          } catch {
+            // best-effort
+          }
+          sessionStorage.removeItem('pending_action')
+        }
+
+        const returnTo = location.state?.returnTo
+        const dest = user?.role === 'admin' && !returnTo ? '/admin' : returnTo || '/'
+        setTimeout(() => navigate(dest, { replace: true }), 1000)
       } else {
         showToast(result.message || result.error || 'Invalid email or password', 'error')
       }
@@ -132,6 +157,11 @@ export default function Login() {
       </div>
       <div className="auth-footer">
         Don&apos;t have an account? <Link to="/register">Create one</Link>
+      </div>
+      <div className="auth-footer" style={{ marginTop: '-0.25rem' }}>
+        <Link to={sessionStorage.getItem('last_public_path') || '/'} className="guest-link">
+          Continue as guest
+        </Link>
       </div>
     </AuthLayout>
   )

@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ToastProvider } from './context/ToastContext.jsx'
 import { SearchProvider } from './context/SearchContext.jsx'
+import { CartProvider } from './context/CartContext.jsx'
 import { useTheme } from './hooks/useTheme.js'
 import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
@@ -29,33 +30,36 @@ export default function App() {
       <ThemeManager />
       <ToastProvider>
         <SearchProvider>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route
-              path="/admin"
-              element={
-                <RequireAdmin>
-                  <AdminLayout />
-                </RequireAdmin>
-              }
-            >
-              <Route index element={<Navigate to="/admin/products" replace />} />
-              <Route path="products" element={<AdminProducts />} />
-              <Route path="products/new" element={<AdminProductForm />} />
-              <Route path="products/:id" element={<AdminProductDetail />} />
-              <Route path="products/:id/edit" element={<AdminProductForm />} />
-              <Route path="inventory" element={<AdminInventory />} />
-              <Route path="inventory/logs" element={<AdminInventoryLogs />} />
-              <Route path="inventory/low-stock" element={<AdminLowStock />} />
-            </Route>
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
+          <CartProvider>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/home" element={<Navigate to="/" replace />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route
+                path="/admin"
+                element={
+                  <RequireAdmin>
+                    <AdminLayout />
+                  </RequireAdmin>
+                }
+              >
+                <Route index element={<Navigate to="/admin/products" replace />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="products/new" element={<AdminProductForm />} />
+                <Route path="products/:id" element={<AdminProductDetail />} />
+                <Route path="products/:id/edit" element={<AdminProductForm />} />
+                <Route path="inventory" element={<AdminInventory />} />
+                <Route path="inventory/logs" element={<AdminInventoryLogs />} />
+                <Route path="inventory/low-stock" element={<AdminLowStock />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </CartProvider>
         </SearchProvider>
       </ToastProvider>
     </BrowserRouter>

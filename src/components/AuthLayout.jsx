@@ -13,7 +13,7 @@ export default function AuthLayout({ title, subtitle, quote, children }) {
           <div className="auth-brand-logo">
             <Logo size={32} />
           </div>
-          <h1>PixelForge</h1>
+          <h1>OKasha Electronics</h1>
           <p>Create stunning pixel art with powerful tools and an intuitive interface.</p>
           <div className="brand-quote">
             <p>{quote}</p>

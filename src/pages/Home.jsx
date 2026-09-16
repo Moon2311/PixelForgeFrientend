@@ -1,5 +1,4 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import TopNavBar from '../components/TopNavBar.jsx'
 import SubHeaderNav from '../components/SubHeaderNav.jsx'
 import HeroBanner from '../components/HeroBanner.jsx'
@@ -10,6 +9,7 @@ import {
   QuickPickCard,
   SectionHeader,
 } from '../components/Cards.jsx'
+import { getUser } from '../lib/api.js'
 
 const FEATURED_BRUSHES = [
   { label: 'Pixel Art Starter Kit', image: 'https://picsum.photos/seed/brush1/400/400', discount: '-30%' },
@@ -35,21 +35,8 @@ const QUICK_PICKS = [
 ]
 
 export default function Home() {
-  const navigate = useNavigate()
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('user')
-    if (!stored) {
-      navigate('/login', { replace: true })
-      return
-    }
-    setUser(JSON.parse(stored))
-  }, [navigate])
-
-  if (!user) return null
-
-  const name = user.first_name || user.username || 'Artist'
+  const user = getUser()
+  const name = user?.first_name || user?.username || 'Artist'
   const firstName = name.split(' ')[0]
 
   return (
@@ -59,22 +46,24 @@ export default function Home() {
 
       {/* Welcome Banner */}
       <div className="bg-pf-navy-light text-white px-4 py-2.5">
-        <div className="max-w-[1500px] mx-auto">
-          <p className="text-sm">
-            Welcome back, <span className="font-bold">{firstName}</span>! Check out today's deals and new releases.
-          </p>
-        </div>
+        <p className="text-sm">
+          {user ? (
+            <>Welcome back, <span className="font-bold">{firstName}</span>! Check out today's deals and new releases.</>
+          ) : (
+            <>Welcome to <span className="font-bold">OKasha Electronics</span>! Browse today's deals and new releases. <Link to="/login" className="underline hover:text-pf-orange transition-colors">Sign in</Link> for the full experience.</>
+          )}
+        </p>
       </div>
 
       {/* Main Content */}
-      <main className="max-w-[1500px] mx-auto px-4 py-6">
+      <main className="px-4 py-6">
         {/* Hero Banner Carousel */}
         <HeroBanner />
 
         {/* Quick Picks Row */}
         <div className="mt-6">
           <SectionHeader title="Shop by Category" href="/products" />
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+          <div className="grid grid-cols-6 gap-4">
             {QUICK_PICKS.map((pick) => (
               <QuickPickCard key={pick.label} {...pick} />
             ))}
@@ -82,7 +71,7 @@ export default function Home() {
         </div>
 
         {/* 4-Column Card Grid */}
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="mt-6 grid grid-cols-4 gap-4">
           {/* Card 1: Featured Feature Card */}
           <FeatureCard
             title="Trending This Week"
@@ -117,7 +106,7 @@ export default function Home() {
         </div>
 
         {/* Second Row of Cards */}
-        <div className="mt-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="mt-4 grid grid-cols-4 gap-4">
           {/* Deal Card */}
           <DealCard
             title="Flash Sale"
@@ -154,7 +143,7 @@ export default function Home() {
         </div>
 
         {/* Banner CTA */}
-        <div className="mt-6 bg-gradient-to-r from-pf-navy to-pf-navy-light rounded-md p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="mt-6 bg-gradient-to-r from-pf-navy to-pf-navy-light rounded-md p-6 flex items-center justify-between gap-4">
           <div>
             <h3 className="text-white text-xl font-bold mb-1">Ready to create something amazing?</h3>
             <p className="text-gray-300 text-sm">
@@ -172,7 +161,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-pf-navy-light text-white mt-8">
-        <div className="max-w-[1500px] mx-auto px-4 py-6">
+        <div className="px-4 py-6">
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
@@ -180,20 +169,20 @@ export default function Home() {
           >
             Back to top
           </button>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-sm">
+          <div className="grid grid-cols-4 gap-6 text-sm">
             <div>
               <h4 className="font-bold mb-3">Get to Know Us</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/products" className="hover:underline">About PixelForge</Link></li>
+                <li><Link to="/products" className="hover:underline">About OKasha Electronics</Link></li>
                 <li><Link to="/products" className="hover:underline">Careers</Link></li>
                 <li><Link to="/products" className="hover:underline">Press Releases</Link></li>
-                <li><Link to="/products" className="hover:underline">PixelForge Science</Link></li>
+                <li><Link to="/products" className="hover:underline">OKasha Electronics Science</Link></li>
               </ul>
             </div>
             <div>
               <h4 className="font-bold mb-3">Make Money with Us</h4>
               <ul className="space-y-2 text-gray-400">
-                <li><Link to="/products" className="hover:underline">Sell on PixelForge</Link></li>
+                <li><Link to="/products" className="hover:underline">Sell on OKasha Electronics</Link></li>
                 <li><Link to="/products" className="hover:underline">Affiliate Program</Link></li>
                 <li><Link to="/products" className="hover:underline">Advertise</Link></li>
                 <li><Link to="/products" className="hover:underline">Self-Publish</Link></li>
@@ -219,7 +208,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-gray-600 mt-6 pt-6 text-center text-gray-400 text-xs">
-            &copy; {new Date().getFullYear()} PixelForge. All rights reserved.
+            &copy; {new Date().getFullYear()} OKasha Electronics. All rights reserved.
           </div>
         </div>
       </footer>
