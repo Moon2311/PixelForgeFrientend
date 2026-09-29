@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Logo, SearchIcon } from './Icons.jsx'
 import { useToast } from '../context/useToast.js'
 import { useCart } from '../context/CartContext.jsx'
@@ -8,6 +8,7 @@ import { useSearch } from '../context/useSearch.js'
 
 export default function TopNavBar() {
   const navigate = useNavigate()
+  const location = useLocation()
   const showToast = useToast()
   const user = getUser()
   const { cartCount } = useCart()
@@ -24,6 +25,8 @@ export default function TopNavBar() {
   const handleSearch = (e) => {
     e.preventDefault()
     commitSearch()
+    // Results are shown on the products page, so jump there from anywhere else.
+    if (location.pathname !== '/products') navigate('/products')
   }
 
   const name = user?.first_name || user?.username || 'User'
@@ -31,31 +34,34 @@ export default function TopNavBar() {
 
   return (
     <header className="bg-pf-navy text-white sticky top-0 z-50">
-      <div className="flex items-center gap-3 px-4 py-2">
+      <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 px-3 md:px-4 py-2">
         {/* Brand Logo */}
         <Link
-          to="/home"
-          className="flex items-center gap-1.5 shrink-0 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors"
+          to="/"
+          className="flex items-center gap-1.5 shrink-0 text-white hover:text-white border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors"
         >
           <Logo size={26} />
-          <span className="text-xl font-bold tracking-tight">
+          <span className="text-lg md:text-xl font-bold tracking-tight">
             OKasha <span className="text-pf-orange">Electronics</span>
           </span>
         </Link>
 
         {/* Search Bar */}
-        <form onSubmit={handleSearch} className="flex flex-1 h-10 rounded-md overflow-hidden">
+        <form
+          onSubmit={handleSearch}
+          className="order-last md:order-none basis-full md:basis-auto flex flex-1 h-10 rounded-md overflow-hidden bg-white focus-within:ring-3 focus-within:ring-pf-orange"
+        >
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search OKasha Electronics"
-            className="flex-1 px-3 text-sm text-pf-text focus:outline-none rounded-l-md"
+            className="flex-1 min-w-0 px-3 text-sm text-pf-text bg-white placeholder:text-gray-500 focus:outline-none"
             aria-label="Search products"
           />
           <button
             type="submit"
-            className="bg-pf-orange hover:bg-pf-orange-hover px-3 flex items-center justify-center transition-colors shrink-0"
+            className="bg-pf-yellow hover:bg-pf-orange text-pf-navy px-4 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
             aria-label="Search"
           >
             <SearchIcon size={20} />
@@ -63,11 +69,11 @@ export default function TopNavBar() {
         </form>
 
         {/* Right Utility Section */}
-        <div className="flex items-center gap-1">
+        <div className="ml-auto flex items-center gap-1">
           {/* Language */}
           <button
             type="button"
-            className="flex items-center gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs"
+            className="hidden lg:flex items-center gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs"
           >
             <span className="font-bold">EN</span>
             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -82,7 +88,7 @@ export default function TopNavBar() {
                 <button
                   type="button"
                   onClick={() => setShowAccountMenu(!showAccountMenu)}
-                  className="flex items-start gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs leading-tight"
+                  className="flex items-start gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs leading-tight whitespace-nowrap cursor-pointer"
                 >
                   <span>
                     <span className="text-gray-300 block">Hello, {firstName}</span>
@@ -139,7 +145,7 @@ export default function TopNavBar() {
               <button
                 type="button"
                 onClick={() => navigate('/login')}
-                className="flex items-start gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs leading-tight"
+                className="flex items-start gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs leading-tight whitespace-nowrap cursor-pointer"
               >
                 <span>
                   <span className="text-gray-300 block">Hello, sign in</span>
@@ -151,8 +157,8 @@ export default function TopNavBar() {
 
           {/* Orders */}
           <Link
-            to="/home"
-            className="flex items-start gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs leading-tight"
+            to="/"
+            className="hidden lg:flex items-start whitespace-nowrap gap-1 text-white hover:text-white border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs leading-tight whitespace-nowrap cursor-pointer"
           >
             <span>
               <span className="text-gray-300 block">Returns</span>
@@ -163,7 +169,7 @@ export default function TopNavBar() {
           {/* Cart */}
           <Link
             to="/cart"
-            className="flex items-center border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors relative"
+            className="flex items-center text-white hover:text-white border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors relative"
           >
             <div className="relative">
               <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -177,7 +183,7 @@ export default function TopNavBar() {
                 </span>
               )}
             </div>
-            <span className="font-bold text-sm ml-1">Cart</span>
+            <span className="hidden sm:inline font-bold text-sm ml-1">Cart</span>
           </Link>
         </div>
       </div>

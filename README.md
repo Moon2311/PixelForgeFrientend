@@ -42,7 +42,7 @@ React + Vite frontend for PixelForge — sign-in, sign-up, password recovery, th
 | **API abstraction** | `src/lib/api.js` provides `getApiBaseUrl()` (auth, default `:8001`) and `getProductsApiBaseUrl()` (products, default `:8002`). `src/lib/productsApi.js` wraps product CRUD calls. `src/lib/validation.js` provides client-side validation helpers. |
 | **Role-based access** | `RequireAdmin` route guard checks the stored user's role; non-admins see a 403 page. The admin sidebar layout (`AdminLayout`) is only accessible to admins. |
 | **UI components** | Reusable components in `src/components/` — `AuthLayout`, `InputField`, `Button`, `SearchBar`, `ProductGrid`, `ProductCard`, `ImageUploader`, `ConfirmDialog`, `ThemeToggle`, `PasswordStrength`, `Icons`. |
-| **Theming** | CSS custom properties + `.dark` class toggle on `<html>`. Styles are split by feature (`auth.css`, `home.css`, `navbar.css`, `products.css`, `admin.css`). |
+| **Theming** | CSS custom properties + `.dark` class toggle on `<html>`. Storefront pages (home, products, cart) use Tailwind v4 utilities with `pf-*` theme tokens; auth and admin use feature CSS (`auth.css`, `admin.css`). Global element resets in `auth.css` sit in `@layer base` so Tailwind utilities can override them. |
 | **Build** | Vite dev server for development (`npm run dev`); production build outputs to `dist/`. |
 
 ### Request flow
@@ -73,10 +73,11 @@ PixelForgefrientend/
     ├── styles/
     │   ├── auth.css            # Shared styles: layout, forms, toasts, dark theme
     │   ├── home.css            # Storefront home styles
-    │   ├── navbar.css          # Shared navbar + search bar
-    │   ├── products.css        # Product grid + status/spinner
+    │   ├── tailwind.css        # Tailwind v4 entry + storefront theme tokens (pf-*)
     │   └── admin.css           # Admin panel styles (sidebar, tables, forms, modals)
     ├── lib/
+    │   ├── catalog.js          # Storefront categories + imagery
+    │   ├── format.js           # formatMoney, discountPercent
     │   ├── api.js              # API base URLs, access token, auth headers, getUser/isAdminUser
     │   ├── productsApi.js      # Product CRUD + inventory API client
     │   └── validation.js       # validateEmail, validateField, passwordStrength
@@ -95,12 +96,17 @@ PixelForgefrientend/
     │   ├── Button.jsx          # Button w/ ripple + loading spinner (variants, size)
     │   ├── PasswordStrength.jsx# 4-bar strength meter
     │   ├── ThemeToggle.jsx     # Sun/moon theme switch
-    │   ├── SearchBar.jsx       # Debounced search input (name/brand/specification)
-    │   ├── Navbar.jsx          # Shared storefront header (search, admin link, sign out)
+    │   ├── StoreLayout.jsx     # Storefront shell: TopNavBar + SubHeaderNav + StoreFooter
+    │   ├── TopNavBar.jsx       # Header: logo, search (→ /products), account menu, cart
+    │   ├── SubHeaderNav.jsx    # Category links + slide-out drawer
+    │   ├── HeroBanner.jsx      # Home carousel
+    │   ├── Cards.jsx           # Home merchandising cards
+    │   ├── ProductStrip.jsx    # Horizontal product row (deals / top rated)
+    │   ├── ProductBits.jsx     # Price + Stars display helpers
     │   ├── ConfirmDialog.jsx   # Confirmation modal (used before delete)
     │   ├── ImageUploader.jsx   # Multi-image upload with previews (JPG/PNG/WEBP)
     │   ├── ProductGrid.jsx     # Fetches + renders product cards (search-aware)
-    │   ├── ProductCard.jsx     # Product card with image slider
+    │   ├── ProductCard.jsx     # Product card with image slider (Tailwind)
     │   └── Icons.jsx           # SVG icon components
     └── pages/
         ├── Login.jsx           # /login (stores access token, redirects admins)

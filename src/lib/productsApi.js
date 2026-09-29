@@ -1,4 +1,4 @@
-import { authHeaders, getProductsApiBaseUrl } from './api.js'
+import { authHeaders, getApiBaseUrl } from './api.js'
 
 export class ApiError extends Error {
   constructor(message, status, data) {
@@ -12,14 +12,14 @@ export class ApiError extends Error {
 async function request(path, { method = 'GET', headers = {}, body } = {}) {
   let response
   try {
-    response = await fetch(`${getProductsApiBaseUrl()}${path}`, {
+    response = await fetch(`${getApiBaseUrl()}${path}`, {
       method,
       headers: { ...headers },
       body,
     })
   } catch {
     throw new ApiError(
-      `Could not reach the products API at ${getProductsApiBaseUrl()}. Check that the search-service is running on port 8002.`,
+      `Could not reach the products API at ${getApiBaseUrl()}. Check that the PixelForge backend is running on port 8000.`,
       0,
     )
   }

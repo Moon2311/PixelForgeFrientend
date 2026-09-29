@@ -1,42 +1,49 @@
 import { useState, useEffect, useCallback } from 'react'
+import { Link } from 'react-router-dom'
+import { categoryImage } from '../lib/catalog.js'
 
 const SLIDES = [
   {
     id: 1,
-    title: 'Create Stunning Pixel Art',
-    subtitle: 'Professional brushes, infinite canvases, and powerful tools.',
-    cta: 'Explore Tools',
-    gradient: 'from-[#667eea] to-[#764ba2]',
-    accent: '#FF9900',
+    eyebrow: 'New arrivals',
+    title: 'The latest smartphones, all in one place',
+    subtitle: 'Flagship cameras, all-day batteries and blazing-fast chips.',
+    cta: 'Shop smartphones',
+    gradient: 'from-[#0f2027] via-[#203a43] to-[#2c5364]',
+    image: categoryImage('Smartphones'),
   },
   {
     id: 2,
-    title: 'Up to 50% Off Pro Brushes',
-    subtitle: 'Limited time sale on premium brush packs for all skill levels.',
-    cta: 'Shop Now',
-    gradient: 'from-[#f093fb] to-[#f5576c]',
-    accent: '#FF9900',
+    eyebrow: 'Limited-time deal',
+    title: 'Up to 30% off laptops',
+    subtitle: 'Power through work and play with our best-selling notebooks.',
+    cta: 'See laptop deals',
+    gradient: 'from-[#232526] to-[#414345]',
+    image: categoryImage('Laptops'),
   },
   {
     id: 3,
-    title: 'New: AI-Powered Templates',
-    subtitle: 'Generate pixel art bases with our new AI template engine.',
-    cta: 'Try Free',
-    gradient: 'from-[#4facfe] to-[#00f2fe]',
-    accent: '#FF9900',
+    eyebrow: 'Sound, perfected',
+    title: 'Noise-cancelling headphones',
+    subtitle: 'Immerse yourself in music with premium wireless audio.',
+    cta: 'Shop audio',
+    gradient: 'from-[#b45309] to-[#f59e0b]',
+    image: categoryImage('Audio'),
   },
   {
     id: 4,
-    title: 'Join 50K+ Artists',
-    subtitle: 'Share your creations, get feedback, and grow your portfolio.',
-    cta: 'Join Now',
-    gradient: 'from-[#43e97b] to-[#38f9d7]',
-    accent: '#FF9900',
+    eyebrow: 'Level up',
+    title: 'Next-gen gaming is here',
+    subtitle: 'Consoles, controllers and accessories for every player.',
+    cta: 'Explore gaming',
+    gradient: 'from-[#1e3a8a] to-[#6366f1]',
+    image: categoryImage('Gaming'),
   },
 ]
 
 export default function HeroBanner() {
   const [current, setCurrent] = useState(0)
+  const [paused, setPaused] = useState(false)
 
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % SLIDES.length)
@@ -47,75 +54,88 @@ export default function HeroBanner() {
   }, [])
 
   useEffect(() => {
-    const timer = setInterval(next, 5000)
+    if (paused) return
+    const timer = setInterval(next, 6000)
     return () => clearInterval(timer)
-  }, [next])
+  }, [next, paused])
 
   return (
-    <div className="relative w-full overflow-hidden rounded-md" style={{ aspectRatio: '3/1' }}>
-      {/* Slides */}
+    <section
+      className="relative w-full overflow-hidden h-[240px] sm:h-[400px] lg:h-[520px]"
+      aria-roledescription="carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
       {SLIDES.map((slide, i) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-transform duration-500 ease-in-out bg-gradient-to-r ${slide.gradient}`}
+          className={`absolute inset-0 transition-transform duration-700 ease-in-out bg-gradient-to-r ${slide.gradient}`}
           style={{ transform: `translateX(${(i - current) * 100}%)` }}
+          aria-hidden={i !== current}
         >
-          <div className="flex flex-col justify-center h-full px-8 md:px-16 max-w-2xl">
-            <h2 className="text-white text-2xl md:text-4xl font-extrabold leading-tight mb-3 drop-shadow-lg">
-              {slide.title}
-            </h2>
-            <p className="text-white/90 text-sm md:text-lg mb-5 leading-relaxed drop-shadow">
-              {slide.subtitle}
-            </p>
-            <button
-              type="button"
-              className="self-start bg-pf-orange hover:bg-pf-orange-hover text-pf-navy font-bold text-sm md:text-base px-6 py-2.5 rounded-full transition-all hover:scale-105 shadow-lg"
-            >
-              {slide.cta}
-            </button>
+          <div className="mx-auto max-w-[1500px] h-full flex items-start justify-between pt-6 sm:pt-12 lg:pt-14 px-12 md:px-20 gap-8">
+            <div className="flex-1 max-w-2xl">
+              <p className="text-pf-yellow text-xs sm:text-sm font-bold uppercase tracking-wider mb-2">
+                {slide.eyebrow}
+              </p>
+              <h2 className="text-white text-2xl sm:text-3xl lg:text-[2.75rem] font-extrabold leading-tight mb-3">
+                {slide.title}
+              </h2>
+              <p className="hidden sm:block text-white/85 text-base lg:text-lg mb-6">
+                {slide.subtitle}
+              </p>
+              <Link
+                to="/products"
+                tabIndex={i === current ? 0 : -1}
+                className="inline-block bg-pf-cta hover:bg-pf-cta-hover text-pf-text hover:text-pf-text font-medium text-sm px-6 py-2.5 rounded-full shadow-md"
+              >
+                {slide.cta}
+              </Link>
+            </div>
+            <img
+              src={slide.image}
+              alt=""
+              className="hidden md:block w-52 lg:w-64 shrink-0 aspect-square object-cover rounded-2xl shadow-2xl ring-4 ring-white/10 rotate-2"
+            />
           </div>
         </div>
       ))}
 
-      {/* Navigation Arrows */}
       <button
         type="button"
         onClick={prev}
-        className="absolute left-0 top-0 bottom-0 w-12 md:w-16 bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-colors z-10"
+        className="absolute left-0 top-0 h-2/3 w-12 md:w-16 text-white/80 hover:text-white flex items-center justify-center z-10 cursor-pointer focus-visible:outline-2 focus-visible:outline-white"
         aria-label="Previous slide"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="15 18 9 12 15 6" />
         </svg>
       </button>
       <button
         type="button"
         onClick={next}
-        className="absolute right-0 top-0 bottom-0 w-12 md:w-16 bg-black/20 hover:bg-black/40 text-white flex items-center justify-center transition-colors z-10"
+        className="absolute right-0 top-0 h-2/3 w-12 md:w-16 text-white/80 hover:text-white flex items-center justify-center z-10 cursor-pointer focus-visible:outline-2 focus-visible:outline-white"
         aria-label="Next slide"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <polyline points="9 18 15 12 9 6" />
         </svg>
       </button>
 
-      {/* Dots */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {SLIDES.map((_, i) => (
+      {/* Fade into the page background so the card row can overlap the banner. */}
+      <div className="absolute bottom-0 left-0 right-0 h-16 sm:h-40 bg-gradient-to-t from-pf-bg via-pf-bg/60 to-transparent pointer-events-none" />
+
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2 z-10 sm:hidden">
+        {SLIDES.map((slide, i) => (
           <button
-            key={i}
+            key={slide.id}
             type="button"
             onClick={() => setCurrent(i)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              i === current ? 'bg-pf-orange scale-125' : 'bg-white/60 hover:bg-white/90'
-            }`}
+            className={`h-2 rounded-full transition-all ${i === current ? 'w-5 bg-pf-text' : 'w-2 bg-pf-text/30'}`}
             aria-label={`Go to slide ${i + 1}`}
           />
         ))}
       </div>
-
-      {/* Fade overlay at bottom */}
-      <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-pf-bg to-transparent pointer-events-none" />
-    </div>
+    </section>
   )
 }

@@ -1,6 +1,6 @@
-import { authHeaders, getCartApiBaseUrl } from './api.js'
+import { authHeaders, getApiBaseUrl } from './api.js'
 
-const CART_API_BASE = getCartApiBaseUrl()
+const CART_API_BASE = getApiBaseUrl()
 
 export class CartApiError extends Error {
   constructor(message, status, data) {
@@ -24,7 +24,7 @@ async function request(path, { method = 'GET', body } = {}) {
     })
   } catch {
     throw new CartApiError(
-      `Could not reach the cart service. Check that cart-service is running.`,
+      `Could not reach the cart API at ${CART_API_BASE}. Check that the PixelForge backend is running on port 8000.`,
       0,
     )
   }

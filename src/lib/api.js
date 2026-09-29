@@ -1,26 +1,23 @@
-const DEFAULT_API_BASE_URL = 'http://localhost:8001'
-const DEFAULT_PRODUCTS_API_BASE_URL = 'http://localhost:8002'
-const DEFAULT_CART_API_BASE_URL = 'http://localhost:8003'
+// The backend is a single Django modular monolith: auth, catalog, search and
+// cart are all served from one host.
+const DEFAULT_API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
+
+// Per-service overrides from the old microservice setup (ports 8001-8003).
+const LEGACY_BASE_URL_KEYS = ['products_api_base_url', 'cart_api_base_url']
+try {
+  LEGACY_BASE_URL_KEYS.forEach((key) => localStorage.removeItem(key))
+} catch {
+  // storage unavailable
+}
 
 export function getApiBaseUrl() {
   const stored = localStorage.getItem('api_base_url')
   const valid =
-    stored && /^https?:\/\/.+/i.test(stored) ? stored.replace(/\/+$/, '') : ''
-  return valid || DEFAULT_API_BASE_URL
-}
-
-export function getProductsApiBaseUrl() {
-  const stored = localStorage.getItem('products_api_base_url')
-  const valid =
-    stored && /^https?:\/\/.+/i.test(stored) ? stored.replace(/\/+$/, '') : ''
-  return valid || DEFAULT_PRODUCTS_API_BASE_URL
-}
-
-export function getCartApiBaseUrl() {
-  const stored = localStorage.getItem('cart_api_base_url')
-  const valid =
-    stored && /^https?:\/\/.+/i.test(stored) ? stored.replace(/\/+$/, '') : ''
-  return valid || DEFAULT_CART_API_BASE_URL
+    stored && /^https?:\/\/.+/i.test(stored) && !/:800[1-3](\/|$)/.test(stored)
+      ? stored.replace(/\/+$/, '')
+      : ''
+  return (valid || DEFAULT_API_BASE_URL).replace(/\/+$/, '')
 }
 
 export function getAccessToken() {
@@ -53,6 +50,12 @@ export function isAdminUser() {
 }
 
 export function signOut() {
+  // Tokens are stateless; this only ends the Django session server-side.
+  fetch(`${getApiBaseUrl()}/api/auth/logout/`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { ...authHeaders() },
+  }).catch(() => {})
   localStorage.removeItem('user')
   localStorage.removeItem('access_token')
 }

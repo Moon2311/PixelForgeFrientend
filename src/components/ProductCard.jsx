@@ -4,7 +4,8 @@ import { getAccessToken } from "../lib/api.js";
 import { addToCart } from "../lib/cartApi.js";
 import { useToast } from "../context/useToast.js";
 import { useCart } from "../context/CartContext.jsx";
-import "./ProductCard.css";
+import { Price, Stars } from "./ProductBits.jsx";
+import { discountPercent, formatMoney } from "../lib/format.js";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -50,18 +51,31 @@ const ProductCard = ({ product }) => {
     }
   };
 
+  const discount = discountPercent(product);
+  const stock = Number(product.stock_quantity) || 0;
+  const specs = [product.brand_name, product.color, product.size]
+    .filter((v) => v && v !== "—")
+    .join(" · ");
+
   return (
-    <div className="product-card">
-      <div className="product-image">
+    <div className="group/card bg-white flex flex-col h-full border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="relative aspect-square bg-gray-50">
         {images.length > 0 ? (
-          <img src={images[index]} alt={product.name} />
+          <img
+            src={images[index]}
+            alt={product.name}
+            loading="lazy"
+            className="w-full h-full object-cover mix-blend-multiply"
+          />
         ) : (
-          <div className="no-image">No image</div>
+          <div className="flex items-center justify-center h-full text-sm text-pf-text-light">
+            No image
+          </div>
         )}
 
-        {product.discount_price && (
-          <span className="discount-badge">
-            Sale
+        {discount > 0 && (
+          <span className="absolute top-3 left-3 bg-pf-deal-red text-white text-xs font-bold px-2 py-1 rounded-sm">
+            -{discount}%
           </span>
         )}
 
@@ -69,7 +83,7 @@ const ProductCard = ({ product }) => {
           <>
             <button
               type="button"
-              className="img-nav img-prev"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center text-pf-text opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100 transition-opacity cursor-pointer"
               aria-label="Previous image"
               onClick={() => goTo(index - 1)}
             >
@@ -77,17 +91,19 @@ const ProductCard = ({ product }) => {
             </button>
             <button
               type="button"
-              className="img-nav img-next"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center text-pf-text opacity-0 group-hover/card:opacity-100 focus-visible:opacity-100 transition-opacity cursor-pointer"
               aria-label="Next image"
               onClick={() => goTo(index + 1)}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
             </button>
-            <div className="img-dots">
+            <div className="absolute bottom-2 inset-x-0 flex justify-center gap-1.5">
               {images.map((_, i) => (
-                <span
+                <button
                   key={i}
-                  className={`dot${i === index ? " active" : ""}`}
+                  type="button"
+                  aria-label={`Show image ${i + 1}`}
+                  className={`h-1.5 rounded-full transition-all cursor-pointer ${i === index ? "w-4 bg-pf-text" : "w-1.5 bg-pf-text/30"}`}
                   onClick={() => goTo(i)}
                 />
               ))}
@@ -96,70 +112,63 @@ const ProductCard = ({ product }) => {
         )}
       </div>
 
-      <div className="product-content">
-        <p className="category">{product.category_name}</p>
+      <div className="flex flex-col flex-1 gap-1.5 p-4">
+        {product.category_name && (
+          <p className="text-xs text-pf-text-light uppercase tracking-wide">
+            {product.category_name}
+          </p>
+        )}
 
-        <h2>{product.name}</h2>
+        <h2 className="text-base font-medium leading-snug text-pf-text line-clamp-2" title={product.name}>
+          {product.name}
+        </h2>
 
-        <p className="description">
-          {product.short_description}
+        {product.short_description && (
+          <p className="text-sm text-pf-text-light leading-snug line-clamp-2">
+            {product.short_description}
+          </p>
+        )}
+
+        {product.rating != null && (
+          <div className="flex items-center gap-1.5 text-sm">
+            <span className="text-pf-text">{Number(product.rating).toFixed(1)}</span>
+            <Stars rating={product.rating} />
+            <span className="text-pf-link">({product.reviews_count ?? 0})</span>
+          </div>
+        )}
+
+        <div className="flex items-baseline flex-wrap gap-x-2 mt-1">
+          <Price value={product.discount_price || product.price} className="text-base" />
+          {discount > 0 && (
+            <span className="text-xs text-pf-text-light">
+              List: <span className="line-through">{formatMoney(product.price)}</span>
+            </span>
+          )}
+        </div>
+
+        {specs && <p className="text-xs text-pf-text-light">{specs}</p>}
+
+        <p className="text-sm mt-auto pt-1">
+          {stock <= 0 ? (
+            <span className="text-pf-deal-red font-medium">Currently unavailable</span>
+          ) : stock <= 5 ? (
+            <span className="text-pf-deal-red">Only {stock} left in stock — order soon.</span>
+          ) : (
+            <span className="text-pf-badge-green">In Stock</span>
+          )}
         </p>
 
-        <div className="rating">
-          ⭐ {product.rating}
-          <span>({product.reviews_count} Reviews)</span>
-        </div>
-
-        <div className="price-section">
-          {product.discount_price ? (
-            <>
-              <span className="discount-price">
-                ${product.discount_price}
-              </span>
-
-              <span className="original-price">
-                ${product.price}
-              </span>
-            </>
-          ) : (
-            <span className="price">
-              ${product.price}
-            </span>
-          )}
-        </div>
-
-        <div className="details">
-          <span>
-            <strong>Brand:</strong> {product.brand_name}
-          </span>
-
-          <span>
-            <strong>Color:</strong> {product.color}
-          </span>
-
-          <span>
-            <strong>Storage:</strong> {product.size}
-          </span>
-        </div>
-
-        <div className="stock">
-          {product.stock_quantity > 0 ? (
-            <span className="in-stock">
-              ✔ In Stock ({product.stock_quantity})
-            </span>
-          ) : (
-            <span className="out-stock">
-              Out of Stock
-            </span>
-          )}
-        </div>
-
         <button
-          className={`buy-btn${added ? " buy-btn-added" : ""}`}
-          disabled={adding || added || product.stock_quantity <= 0}
+          type="button"
+          className={`mt-2 w-full rounded-full py-2 text-sm font-medium shadow-sm transition-colors cursor-pointer disabled:cursor-not-allowed ${
+            added
+              ? "bg-pf-badge-green text-white"
+              : "bg-pf-cta hover:bg-pf-cta-hover text-pf-text disabled:bg-gray-200 disabled:text-gray-500"
+          }`}
+          disabled={adding || added || stock <= 0}
           onClick={handleAddToCart}
         >
-          {adding ? "Adding..." : added ? "✓ Added to Cart" : "Add to Cart"}
+          {adding ? "Adding..." : added ? "✓ Added to Cart" : stock <= 0 ? "Out of stock" : "Add to Cart"}
         </button>
       </div>
     </div>
