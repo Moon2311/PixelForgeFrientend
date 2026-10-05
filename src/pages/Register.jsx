@@ -75,8 +75,10 @@ export default function Register() {
         const fieldErrors = {}
         let fallback = ''
 
-        if (data && typeof data === 'object' && !Array.isArray(data)) {
-          Object.entries(data).forEach(([field, err]) => {
+        // Field errors come in the response's ``data``: { field: [messages] }.
+        const errorsByField = data?.data
+        if (errorsByField && typeof errorsByField === 'object' && !Array.isArray(errorsByField)) {
+          Object.entries(errorsByField).forEach(([field, err]) => {
             const first = Array.isArray(err) ? err[0] : err
             if (typeof first !== 'string') return
             if (FIELD_MAP[field] === 'form') fallback = first

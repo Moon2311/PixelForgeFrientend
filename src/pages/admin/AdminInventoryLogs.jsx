@@ -14,12 +14,13 @@ function fmtDate(value) {
 
 const ACTIONS = [
   { value: '', label: 'All actions' },
+  { value: 'sale', label: 'Sale' },
   { value: 'create', label: 'Created' },
   { value: 'update', label: 'Updated' },
   { value: 'delete', label: 'Deleted' },
-  { value: 'increase', label: 'Stock increased' },
-  { value: 'decrease', label: 'Stock decreased' },
-  { value: 'set', label: 'Stock set' },
+  { value: 'stock_in', label: 'Stock in' },
+  { value: 'stock_out', label: 'Stock out' },
+  { value: 'return', label: 'Return' },
 ]
 
 export default function AdminInventoryLogs() {

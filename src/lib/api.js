@@ -29,9 +29,71 @@ export function setAccessToken(token) {
   else localStorage.removeItem('access_token')
 }
 
+export function getRefreshToken() {
+  return localStorage.getItem('refresh_token') || ''
+}
+
+export function setRefreshToken(token) {
+  if (token) localStorage.setItem('refresh_token', token)
+  else localStorage.removeItem('refresh_token')
+}
+
 export function authHeaders() {
   const token = getAccessToken()
   return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+function clearSession() {
+  localStorage.removeItem('user')
+  setAccessToken('')
+  setRefreshToken('')
+  window.dispatchEvent(new Event('auth-expired'))
+  window.dispatchEvent(new Event('cart-updated'))
+}
+
+// One refresh at a time: concurrent 401s share the same request.
+let refreshPromise = null
+
+// Trade the refresh token for a new token pair. Resolves to true on success;
+// on failure the session is cleared and the user has to log in again.
+export function refreshAccessToken() {
+  if (refreshPromise) return refreshPromise
+  const refreshToken = getRefreshToken()
+  if (!refreshToken) {
+    clearSession()
+    return Promise.resolve(false)
+  }
+  refreshPromise = fetch(`${getApiBaseUrl()}/api/auth/refresh/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ refresh_token: refreshToken }),
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        clearSession()
+        return false
+      }
+      const result = await response.json()
+      setAccessToken(result.data?.access_token)
+      setRefreshToken(result.data?.refresh_token)
+      return true
+    })
+    // Network error: keep the tokens so a later request can retry.
+    .catch(() => false)
+    .finally(() => {
+      refreshPromise = null
+    })
+  return refreshPromise
+}
+
+// fetch() with the Bearer token attached. When the access token has expired
+// (401), it is refreshed once and the request retried.
+export async function authFetch(url, init = {}) {
+  const send = () =>
+    fetch(url, { ...init, headers: { ...init.headers, ...authHeaders() } })
+  const response = await send()
+  if (response.status !== 401 || !getAccessToken()) return response
+  return (await refreshAccessToken()) ? send() : response
 }
 
 export function getUser() {
@@ -57,5 +119,6 @@ export function signOut() {
     headers: { ...authHeaders() },
   }).catch(() => {})
   localStorage.removeItem('user')
-  localStorage.removeItem('access_token')
+  setAccessToken('')
+  setRefreshToken('')
 }

@@ -12,15 +12,10 @@ import {
 } from '../components/Cards.jsx'
 import { getUser } from '../lib/api.js'
 import { CATEGORIES, categoryImage } from '../lib/catalog.js'
-import { discountPercent } from '../lib/format.js'
 
-const pickDeals = (list) =>
-  list
-    .filter((p) => discountPercent(p) > 0)
-    .sort((a, b) => discountPercent(b) - discountPercent(a))
-
-const pickTopRated = (list) =>
-  [...list].sort((a, b) => (Number(b.rating) || 0) - (Number(a.rating) || 0))
+// Asked from the API so only the strip's products are loaded.
+const DEALS = { on_sale: 1, sort: 'discount', order: 'desc' }
+const TOP_RATED = { sort: 'rating', order: 'desc' }
 
 const byLabels = (labels) => CATEGORIES.filter((c) => labels.includes(c.label))
 
@@ -65,7 +60,7 @@ export default function Home() {
         </div>
 
         <div className="px-3 sm:px-4 mt-5 space-y-5">
-          <ProductStrip title="Today's deals" pick={pickDeals} />
+          <ProductStrip title="Today's deals" params={DEALS} />
 
           <section className="bg-pf-card p-5 shadow-sm">
             <SectionHeader title="Shop by category" ctaText="See all" />
@@ -83,7 +78,7 @@ export default function Home() {
             <FeatureCard title="Wireless freedom" image={categoryImage('Audio')} cta="Shop headphones" />
           </div>
 
-          <ProductStrip title="Top rated by customers" pick={pickTopRated} />
+          <ProductStrip title="Top rated by customers" params={TOP_RATED} />
 
           <section className="bg-gradient-to-r from-pf-navy to-pf-navy-light p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>

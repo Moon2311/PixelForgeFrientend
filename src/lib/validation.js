@@ -31,3 +31,11 @@ export function passwordStrength(value) {
 }
 
 export const STRENGTH_LABELS = ['', 'Weak', 'Fair', 'Good', 'Strong']
+
+// Lenient phone check: digits with optional +, spaces, dashes or brackets.
+// Accepts local Pakistani numbers (0300 1234567) and international ones
+// (+92 300 1234567). Mirrors the backend's check.
+export function validatePhone(phone) {
+  const digits = phone.replace(/\D/g, '')
+  return /^\+?[0-9][0-9\s()-]*$/.test(phone.trim()) && digits.length >= 10 && digits.length <= 15
+}

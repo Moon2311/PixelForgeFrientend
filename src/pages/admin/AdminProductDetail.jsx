@@ -3,7 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Button from '../../components/Button.jsx'
 import { BackIcon, EditIcon } from '../../components/Icons.jsx'
 import { useToast } from '../../context/useToast.js'
+import { getProductSales, ORDER_STATUS_LABELS } from '../../lib/ordersApi.js'
 import { getProduct, getStockHistory, updateStock } from '../../lib/productsApi.js'
+import CustomerCell from './CustomerCell.jsx'
 
 function fmtMoney(value) {
   if (value === null || value === undefined || value === '') return '—'
@@ -28,6 +30,7 @@ export default function AdminProductDetail() {
 
   const [product, setProduct] = useState(null)
   const [history, setHistory] = useState([])
+  const [sales, setSales] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [galleryIndex, setGalleryIndex] = useState(0)
@@ -40,9 +43,10 @@ export default function AdminProductDetail() {
     async (showLoading = true) => {
       if (showLoading) setLoading(true)
       try {
-        const [p, h] = await Promise.all([getProduct(id), getStockHistory(id)])
+        const [p, h, s] = await Promise.all([getProduct(id), getStockHistory(id), getProductSales(id)])
         setProduct(p)
         setHistory(h || [])
+        setSales(s)
         setQty(String(p.stock_quantity ?? 0))
         setError('')
       } catch (err) {
@@ -276,6 +280,67 @@ export default function AdminProductDetail() {
           <p className="detail-text detail-long">{product.specifications || '—'}</p>
         </section>
       </div>
+
+      <section className="admin-card product-sales">
+        <h2 className="admin-section-title">Sales history</h2>
+        <div className="stock-stat-row">
+          <div className="stock-stat">
+            <span className="stock-stat-value">{sales.summary.units_sold}</span>
+            <span className="stock-stat-label">Units sold</span>
+          </div>
+          <div className="stock-stat">
+            <span className="stock-stat-value">{fmtMoney(sales.summary.revenue)}</span>
+            <span className="stock-stat-label">Revenue</span>
+          </div>
+          <div className="stock-stat">
+            <span className="stock-stat-value">{sales.summary.orders}</span>
+            <span className="stock-stat-label">Orders</span>
+          </div>
+          <div className="stock-stat">
+            <span className="stock-stat-value">{sales.summary.customers}</span>
+            <span className="stock-stat-label">Customers</span>
+          </div>
+        </div>
+        {sales.sales.length === 0 ? (
+          <p className="detail-empty">This product hasn't been sold yet.</p>
+        ) : (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Order #</th>
+                  <th>Customer</th>
+                  <th>Qty</th>
+                  <th>Unit price</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sales.sales.map((sale) => (
+                  <tr key={sale.order_number}>
+                    <td>{fmtDate(sale.ordered_at)}</td>
+                    <td className="admin-sku">{sale.order_number}</td>
+                    <td>
+                      <CustomerCell customer={sale.customer} contact={sale.contact} />
+                    </td>
+                    <td>{sale.quantity}</td>
+                    <td>{fmtMoney(sale.unit_price)}</td>
+                    <td>{fmtMoney(sale.line_total)}</td>
+                    <td>
+                      <span className={`status-pill order-${sale.order_status}`}>
+                        {ORDER_STATUS_LABELS[sale.order_status] || sale.order_status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        <p className="order-note">Cancelled orders are listed but not counted in the totals.</p>
+      </section>
     </div>
   )
 }

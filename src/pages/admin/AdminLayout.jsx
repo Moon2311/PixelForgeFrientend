@@ -4,6 +4,7 @@ import {
   AlertIcon,
   BackIcon,
   BoxIcon,
+  CartIcon,
   GridIcon,
   LogsIcon,
   Logo,
@@ -60,6 +61,13 @@ export default function AdminLayout() {
           >
             <AlertIcon />
             <span>Low stock alerts</span>
+          </NavLink>
+          <NavLink
+            to="/admin/orders"
+            className={({ isActive }) => `admin-nav-item${isActive ? ' active' : ''}`}
+          >
+            <CartIcon />
+            <span>Orders</span>
           </NavLink>
         </nav>
         <div className="admin-sidebar-footer">

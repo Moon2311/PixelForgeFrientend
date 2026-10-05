@@ -28,12 +28,15 @@ const ProductCard = ({ product }) => {
     if (adding || added) return;
 
     // Guest user: save pending action and redirect to login
-    if (!getAccessToken()) {
+    const redirectToLogin = () => {
       sessionStorage.setItem(
         "pending_action",
         JSON.stringify({ type: "add_to_cart", productId: product.id }),
       );
       navigate("/login", { state: { returnTo: "/cart" } });
+    };
+    if (!getAccessToken()) {
+      redirectToLogin();
       return;
     }
 
@@ -45,6 +48,13 @@ const ProductCard = ({ product }) => {
       window.dispatchEvent(new Event("cart-updated"));
       setTimeout(() => setAdded(false), 2000);
     } catch (err) {
+      // Session expired and the refresh token was rejected: log in again,
+      // then the product is added to the cart.
+      if (err.status === 401) {
+        showToast("Your session expired. Please log in again.", "error");
+        redirectToLogin();
+        return;
+      }
       showToast(err.message || "Failed to add to cart", "error");
     } finally {
       setAdding(false);

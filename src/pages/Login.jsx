@@ -6,7 +6,7 @@ import Button from '../components/Button.jsx'
 import { EmailIcon, LockIcon, GoogleIcon, GithubIcon } from '../components/Icons.jsx'
 import { useToast } from '../context/useToast.js'
 import { useCart } from '../context/CartContext.jsx'
-import { getApiBaseUrl, setAccessToken } from '../lib/api.js'
+import { getApiBaseUrl, setAccessToken, setRefreshToken } from '../lib/api.js'
 import { addToCart } from '../lib/cartApi.js'
 
 export default function Login() {
@@ -51,6 +51,7 @@ export default function Login() {
         const token = result.data?.access_token
         localStorage.setItem('user', JSON.stringify(user))
         setAccessToken(token)
+        setRefreshToken(result.data?.refresh_token)
         if (remember) {
           localStorage.setItem('remembered_email', email)
         } else {

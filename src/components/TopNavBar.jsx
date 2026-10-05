@@ -70,17 +70,6 @@ export default function TopNavBar() {
 
         {/* Right Utility Section */}
         <div className="ml-auto flex items-center gap-1">
-          {/* Language */}
-          <button
-            type="button"
-            className="hidden lg:flex items-center gap-1 border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs"
-          >
-            <span className="font-bold">EN</span>
-            <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
-
           {/* Account & Lists */}
           <div className="relative">
             {user ? (
@@ -124,6 +113,13 @@ export default function TopNavBar() {
                         </Link>
                       )}
                       <Link
+                        to="/orders"
+                        onClick={() => setShowAccountMenu(false)}
+                        className="block text-sm text-pf-link hover:text-pf-link-hover hover:underline mb-2"
+                      >
+                        Your Orders
+                      </Link>
+                      <Link
                         to="/cart"
                         onClick={() => setShowAccountMenu(false)}
                         className="block text-sm text-pf-link hover:text-pf-link-hover hover:underline mb-2"
@@ -157,7 +153,7 @@ export default function TopNavBar() {
 
           {/* Orders */}
           <Link
-            to="/"
+            to="/orders"
             className="hidden lg:flex items-start whitespace-nowrap gap-1 text-white hover:text-white border border-transparent hover:border-white px-2 py-1 rounded-sm transition-colors text-xs leading-tight whitespace-nowrap cursor-pointer"
           >
             <span>

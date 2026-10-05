@@ -296,12 +296,12 @@ export default function Cart() {
                 Subtotal ({itemsLabel}): <span className="font-bold">{formatMoney(subtotal)}</span>
               </p>
               {isAuth ? (
-                <button
-                  type="button"
-                  className="w-full bg-pf-cta hover:bg-pf-cta-hover text-pf-text text-sm font-medium py-2 rounded-full shadow-sm cursor-pointer"
+                <Link
+                  to="/checkout"
+                  className="block text-center w-full bg-pf-cta hover:bg-pf-cta-hover text-pf-text hover:text-pf-text text-sm font-medium py-2 rounded-full shadow-sm"
                 >
                   Proceed to checkout
-                </button>
+                </Link>
               ) : (
                 <>
                   <Link

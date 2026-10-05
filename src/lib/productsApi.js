@@ -1,4 +1,4 @@
-import { authHeaders, getApiBaseUrl } from './api.js'
+import { authFetch, getApiBaseUrl } from './api.js'
 
 export class ApiError extends Error {
   constructor(message, status, data) {
@@ -12,7 +12,7 @@ export class ApiError extends Error {
 async function request(path, { method = 'GET', headers = {}, body } = {}) {
   let response
   try {
-    response = await fetch(`${getApiBaseUrl()}${path}`, {
+    response = await authFetch(`${getApiBaseUrl()}${path}`, {
       method,
       headers: { ...headers },
       body,
@@ -41,7 +41,7 @@ async function request(path, { method = 'GET', headers = {}, body } = {}) {
   return result?.data
 }
 
-function queryString(params) {
+export function queryString(params) {
   const qs = new URLSearchParams()
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') qs.set(key, value)
@@ -65,7 +65,6 @@ export function getMeta() {
 export function createProduct(formData) {
   return request('/api/products/', {
     method: 'POST',
-    headers: { ...authHeaders() },
     body: formData,
   })
 }
@@ -73,7 +72,6 @@ export function createProduct(formData) {
 export function updateProduct(id, formData) {
   return request(`/api/products/${id}/`, {
     method: 'PUT',
-    headers: { ...authHeaders() },
     body: formData,
   })
 }
@@ -81,40 +79,36 @@ export function updateProduct(id, formData) {
 export function deleteProduct(id) {
   return request(`/api/products/${id}/`, {
     method: 'DELETE',
-    headers: { ...authHeaders() },
   })
 }
 
 export function updateStock(id, payload) {
   return request(`/api/products/${id}/stock/`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
 }
 
 export function getStockHistory(id) {
   return request(`/api/products/${id}/stock/history/`, {
-    headers: { ...authHeaders() },
   })
 }
 
 export function getInventoryLogs(params = {}) {
   return request(`/api/products/inventory/logs/${queryString(params)}`, {
-    headers: { ...authHeaders() },
   })
 }
 
 export function getLowStockAlerts(params = {}) {
   return request(`/api/products/inventory/low-stock/${queryString(params)}`, {
-    headers: { ...authHeaders() },
   })
 }
 
 export function resolveLowStockAlert(id) {
   return request(`/api/products/inventory/low-stock/${id}/resolve/`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json', ...authHeaders() },
+    headers: { 'Content-Type': 'application/json' },
     body: '{}',
   })
 }

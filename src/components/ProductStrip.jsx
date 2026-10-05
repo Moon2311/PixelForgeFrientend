@@ -4,13 +4,14 @@ import { listProducts } from '../lib/productsApi.js'
 import { Price, Stars } from './ProductBits.jsx'
 import { discountPercent } from '../lib/format.js'
 
-// Horizontally scrolling row of products. `pick` selects/orders the items to show.
-export default function ProductStrip({ title, pick = (list) => list, limit = 12 }) {
+// Horizontally scrolling row of products. `params` filter/sort the API list;
+// only the first `limit` products are fetched.
+export default function ProductStrip({ title, params, limit = 12 }) {
   const [products, setProducts] = useState(null)
 
   useEffect(() => {
     let cancelled = false
-    listProducts()
+    listProducts({ ...params, page_size: limit })
       .then((data) => {
         if (!cancelled) setProducts(data?.results || [])
       })
@@ -20,9 +21,9 @@ export default function ProductStrip({ title, pick = (list) => list, limit = 12 
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [params, limit])
 
-  const items = products ? pick(products).slice(0, limit) : null
+  const items = products
 
   // Hide the whole section when the API is unavailable or nothing matches.
   if (items && items.length === 0) return null

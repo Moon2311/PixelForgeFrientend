@@ -1,4 +1,4 @@
-import { authHeaders, getApiBaseUrl } from './api.js'
+import { authFetch, getApiBaseUrl } from './api.js'
 
 const CART_API_BASE = getApiBaseUrl()
 
@@ -14,12 +14,9 @@ export class CartApiError extends Error {
 async function request(path, { method = 'GET', body } = {}) {
   let response
   try {
-    response = await fetch(`${CART_API_BASE}${path}`, {
+    response = await authFetch(`${CART_API_BASE}${path}`, {
       method,
-      headers: {
-        'Content-Type': 'application/json',
-        ...authHeaders(),
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: body ? JSON.stringify(body) : undefined,
     })
   } catch {
