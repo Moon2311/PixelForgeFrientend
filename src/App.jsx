@@ -7,7 +7,6 @@ import Login from './pages/Login.jsx'
 import Register from './pages/Register.jsx'
 import ForgotPassword from './pages/ForgotPassword.jsx'
 import ResetPassword from './pages/ResetPassword.jsx'
-import Home from './pages/Home.jsx'
 import Products from './pages/Products.jsx'
 import Cart from './pages/Cart.jsx'
 import Checkout from './pages/Checkout.jsx'
@@ -37,8 +36,8 @@ export default function App() {
         <SearchProvider>
           <CartProvider>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/home" element={<Navigate to="/" replace />} />
+              <Route path="/" element={<Navigate to="/products" replace />} />
+              <Route path="/home" element={<Navigate to="/products" replace />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -67,7 +66,7 @@ export default function App() {
                 <Route path="inventory/low-stock" element={<AdminLowStock />} />
                 <Route path="orders" element={<AdminOrders />} />
               </Route>
-              <Route path="*" element={<Navigate to="/" replace />} />
+              <Route path="*" element={<Navigate to="/products" replace />} />
             </Routes>
           </CartProvider>
         </SearchProvider>

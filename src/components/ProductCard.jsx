@@ -68,8 +68,8 @@ const ProductCard = ({ product }) => {
     .join(" · ");
 
   return (
-    <div className="group/card bg-white flex flex-col h-full border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="relative aspect-square bg-gray-50">
+    <div className="group/card flex flex-col h-full rounded-2xl border border-gray-100 bg-gradient-to-b from-white to-gray-50 p-3 sm:p-4 shadow-[0_6px_18px_-10px_rgba(15,17,17,0.18)] hover:shadow-[0_30px_60px_-20px_rgba(15,17,17,0.35)] hover:-translate-y-2 transform-gpu will-change-transform transition-[transform,box-shadow] duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+      <div className="relative aspect-square overflow-hidden rounded-xl bg-white">
         {images.length > 0 ? (
           <img
             src={images[index]}
@@ -122,9 +122,9 @@ const ProductCard = ({ product }) => {
         )}
       </div>
 
-      <div className="flex flex-col flex-1 gap-1.5 p-4">
+      <div className="flex flex-col flex-1 gap-1.5 pt-3 sm:pt-4">
         {product.category_name && (
-          <p className="text-xs text-pf-text-light uppercase tracking-wide">
+          <p className="text-[10px] font-semibold text-pf-text-light uppercase tracking-widest">
             {product.category_name}
           </p>
         )}
